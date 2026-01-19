@@ -1,2 +1,1 @@
-print("Hello There! This is my public repo")
-print("Hello World")
+print("v1 - v2")
