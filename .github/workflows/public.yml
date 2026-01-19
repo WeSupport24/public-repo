@@ -1,0 +1,32 @@
+name: Public Repo Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout public repo
+        uses: actions/checkout@v4
+
+      - name: Run app
+        run: python app.py
+
+      - name: Trigger private repo
+        if: success()
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.PRIVATE_REPO_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/WeSupport24/private-repo/dispatches \
+            -d '{
+              "event_type": "deploy_public_repo",
+              "client_payload": {
+                "repo": "public-repo",
+                "branch": "main"
+              }
+            }'
